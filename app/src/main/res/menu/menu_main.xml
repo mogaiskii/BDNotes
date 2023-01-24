@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.awesomeapps.MainActivity">
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_set_pin"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_list"
+        android:orderInCategory="200"
+        android:title="@string/action_list"
+        app:showAsAction="never"
+        />
+    <item
+        android:id="@+id/action_save"
+        android:orderInCategory="300"
+        android:title="@string/action_save"
+        app:showAsAction="never"
+        />
+</menu>
