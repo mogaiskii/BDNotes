@@ -1,6 +1,7 @@
 package com.example.awesomeapps
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import com.google.android.material.snackbar.Snackbar
@@ -12,6 +13,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import com.example.awesomeapps.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -32,7 +34,14 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        binding.actionSave.setOnClickListener { saveNote() }
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+
+        binding.toolbar.navigationIcon = ContextCompat.getDrawable(
+            this, android.R.drawable.ic_input_add
+        )
+        binding.toolbar.navigationIcon?.setTint(Color.WHITE)
+        binding.toolbar.setNavigationOnClickListener { saveNote() }
 
         binding.floatingActionButton.setOnClickListener {
             saveNote()
