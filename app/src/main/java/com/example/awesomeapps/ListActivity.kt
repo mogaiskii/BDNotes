@@ -28,6 +28,8 @@ class ListActivity : AppCompatActivity(), NoteClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        checkAuth()
+
         binding = ActivityListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -42,6 +44,12 @@ class ListActivity : AppCompatActivity(), NoteClickListener {
         setRecyclerView()
     }
 
+    private fun checkAuth() {
+        if (!(application as NoteApplication).isAuthorized(this)) {
+            navigateToPin()
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_list, menu)
@@ -53,9 +61,17 @@ class ListActivity : AppCompatActivity(), NoteClickListener {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> navigateToPin(true)
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun navigateToPin(setting: Boolean = false): Boolean {
+        val intent = Intent(this, PinActivity::class.java)
+        if (setting) intent.putExtra("setting", true)
+        startActivity(intent)
+        finish()
+        return true
     }
 
     private fun navigateToMain(): Boolean {

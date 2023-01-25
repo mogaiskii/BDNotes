@@ -2,21 +2,27 @@ package com.example.awesomeapps
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
-import androidx.fragment.app.FragmentManager
+import android.view.WindowManager
+import androidx.activity.viewModels
 import com.example.awesomeapps.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+
+    private var note: Note? = null
+    private val noteViewModel: NoteViewModel by viewModels {
+        NoteModelFactory((application as NoteApplication).repository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,10 +32,31 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
         binding.actionSave.setOnClickListener { saveNote() }
+
+        binding.floatingActionButton.setOnClickListener {
+            saveNote()
+        }
+
+        binding.editTextTextMultiLine2.requestFocus()
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+        val noteId = intent?.getStringExtra("noteId")
+        if (noteId != null) {
+            subscribeToNote(noteId)
+        }
+    }
+
+    private fun subscribeToNote(noteId: String) {
+        val self = this
+        noteViewModel.noteById(noteId).observe(this) {
+            note = it
+            if (note != null) {
+                Log.d("NOTE", it.id.toString())
+                Log.d("NOTE", it.text)
+                self.note = note!!
+                binding.editTextTextMultiLine2.setText(note!!.text)
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -46,19 +73,39 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> true
             R.id.action_list -> navigateToList()
             R.id.action_save -> saveNote()
+            R.id.action_delete -> deleteNote()
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    private fun saveNote(): Boolean {
-        val fragmentManager = supportFragmentManager
-        val fragment = fragmentManager.findFragmentById(R.id.FirstFragment) as FirstFragment
-        fragment.saveAction()
-        return true
+    private fun deleteNote(): Boolean {
+        if (note != null) {
+            noteViewModel.deleteNote(note!!)
+        }
+        return navigateToList()
     }
 
-    private fun navigateToList(): Boolean {
-        startActivity(Intent(this, ListActivity::class.java))
+    private fun saveNote(): Boolean {
+        val text = binding.editTextTextMultiLine2.text.toString()
+        if (text.isEmpty()) return true
+
+        if (note != null) {
+            note!!.text = text
+            noteViewModel.updateNote(note!!)
+        } else {
+            this.note = Note(text=text)
+            noteViewModel.addNote(note!!)
+        }
+        return navigateToList()
+    }
+
+    private fun navigateToList(deleteTop: Boolean = false): Boolean {
+        val intent = Intent(this, ListActivity::class.java)
+        if (deleteTop) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+        startActivity(intent)
+        finish()
         return true
     }
 

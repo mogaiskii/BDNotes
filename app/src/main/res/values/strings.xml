@@ -4,6 +4,7 @@
     <string name="action_set_pin">Set Pin</string>
     <string name="action_list">List</string>
     <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">New note</string>
     <string name="second_fragment_label">Created note</string>
