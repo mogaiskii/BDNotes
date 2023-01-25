@@ -53,6 +53,9 @@ class ListActivity : AppCompatActivity(), NoteClickListener {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_list, menu)
+        if (!(application as NoteApplication).isPasswordSet(this)) {
+            binding.toolbar.menu.findItem(R.id.action_remove_pin)?.isVisible = false
+        }
         return true
     }
 
@@ -62,8 +65,14 @@ class ListActivity : AppCompatActivity(), NoteClickListener {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> navigateToPin(true)
+            R.id.action_remove_pin -> removePin()
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun removePin(): Boolean {
+        (application as NoteApplication).removePin(this)
+        return true
     }
 
     private fun navigateToPin(setting: Boolean = false): Boolean {

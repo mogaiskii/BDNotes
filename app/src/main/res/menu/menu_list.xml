@@ -7,4 +7,9 @@
         android:orderInCategory="100"
         android:title="@string/action_set_pin"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_remove_pin"
+        android:orderInCategory="100"
+        android:title="@string/action_remove_pin"
+        app:showAsAction="never" />
 </menu>

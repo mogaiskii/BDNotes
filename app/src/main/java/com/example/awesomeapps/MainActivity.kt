@@ -39,7 +39,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.editTextTextMultiLine2.requestFocus()
-        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+        window?.setSoftInputMode(
+            WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+        )
         val noteId = intent?.getStringExtra("noteId")
         if (noteId != null) {
             subscribeToNote(noteId)
@@ -62,6 +64,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
+        if (note == null) {
+            binding.toolbar.menu.findItem(R.id.empty)?.isVisible = false
+            binding.toolbar.menu.findItem(R.id.action_delete)?.isVisible = false
+        }
         return true
     }
 
@@ -70,7 +76,6 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
             R.id.action_list -> navigateToList()
             R.id.action_save -> saveNote()
             R.id.action_delete -> deleteNote()
