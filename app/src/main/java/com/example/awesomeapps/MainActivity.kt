@@ -1,5 +1,8 @@
 package com.example.awesomeapps
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -15,6 +18,8 @@ import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import com.example.awesomeapps.databinding.ActivityMainBinding
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -87,9 +92,24 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_list -> navigateToList()
             R.id.action_save -> saveNote()
+            R.id.action_copy -> copyNote()
             R.id.action_delete -> deleteNote()
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun copyNote(): Boolean {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val noteText = binding.editTextTextMultiLine2.text.toString()
+        val dateFormatter = if (note != null) {
+            NoteDateFormatter(note!!.created)
+        } else {
+            NoteDateFormatter(Date())
+        }
+        val text = dateFormatter.formatDateTimeWithText(noteText)
+        val clip = ClipData.newPlainText("label", text)
+        clipboard.setPrimaryClip(clip)
+        return true
     }
 
     private fun deleteNote(): Boolean {

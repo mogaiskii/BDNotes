@@ -4,15 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.LinearLayout
 import androidx.activity.viewModels
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.awesomeapps.databinding.ActivityListBinding
 
@@ -66,7 +61,20 @@ class ListActivity : AppCompatActivity(), NoteClickListener {
         return when (item.itemId) {
             R.id.action_settings -> navigateToPin(true)
             R.id.action_remove_pin -> removePin()
+            R.id.action_export_notes -> exportNotes()
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun exportNotes(): Boolean {
+        return try {
+            NotesExporter(noteViewModel.notes.value!!).exportNotes(applicationContext)
+            true
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            Snackbar.make(window.decorView.rootView, "Error happened :(", Snackbar.LENGTH_SHORT)
+                .setAction("Action", null).show()
+            false
         }
     }
 
